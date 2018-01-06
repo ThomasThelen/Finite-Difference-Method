@@ -108,7 +108,7 @@ public:
 	// !Retrieve a temperature at a given state and node from the results vector.
 	//virtual void CreateMesh(Mesh&);
 	// !Retrieves a record from the results vector
-	tuple<double, double> Engine::GetRecordb(int, int) const;
+	tuple<double, double> GetRecordb(int, int) const;
 	// !Retrieves a temperature in the forward or backward position.
 	void CreateTime();
 };
@@ -121,7 +121,7 @@ public:
 		@arg Mesh1D The mesh that will be used during the simulation
 
 	*/
-	void StartSimulation(Mesh1D&);
+	void StartSimulation(Mesh1D& mesh);
 
 
 	/*! Fills in important properties for the mesh. 

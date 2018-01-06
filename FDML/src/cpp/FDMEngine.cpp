@@ -1,7 +1,5 @@
+#include "stdafx.h"
 #include "FDMEngine.hpp"
-
-
-
 
 
 
@@ -54,26 +52,27 @@ tuple<double, double> Engine::GetRecordb(int state_position, int record_position
 
 void Engine1D::StartSimulation(Mesh1D &mesh)
 {
-	this->number_of_states = this->time_length / this->time_step;
+	number_of_states = time_length / time_step;
 	CreateMesh(mesh);
-	this->CreateTime();
-	this->CreateInitialState(mesh);
-	this->Solve(mesh);
+	CreateTime();
+	CreateInitialState(mesh);
+	Solve(mesh);
 }
+
 void Engine1D::CreateInitialState(Mesh1D &mesh)
 {
 	//Fill 0<x<L
-	this->number_of_states = this->time_length / this->time_step;
+	number_of_states = time_length / time_step;
 	// !Place first initial condition
-	this->current_configuration.push_back(std::make_tuple(mesh.all_node_locations.front(), mesh.DirchletBoundaryEquation(0,1)));
+	current_configuration.push_back(std::make_tuple(mesh.all_node_locations.front(), mesh.DirchletBoundaryEquation(0,1)));
 	// !Iterate over the nodes which are not boundary conditions. (starts at node 1 and stops at # of nodes-1
 	for (float j = 1; j <= mesh.number_of_nodes- 1; ++j)
 	{
-		this->current_configuration.push_back(std::make_tuple(mesh.all_node_locations.at(j), mesh.InitialDistribution(0)));
+		current_configuration.push_back(std::make_tuple(mesh.all_node_locations.at(j), mesh.InitialDistribution(0)));
 	}
-	this->current_configuration.push_back(std::make_tuple(mesh.all_node_locations.back(), mesh.DirchletBoundaryEquation(0, 2))); // Once filled, set the last B.C.
-	this->results.push_back(this->current_configuration); // Add to the vector of states
-	this->current_configuration.clear(); // Clear the current state
+	current_configuration.push_back(std::make_tuple(mesh.all_node_locations.back(), mesh.DirchletBoundaryEquation(0, 2))); // Once filled, set the last B.C.
+	results.push_back(current_configuration); // Add to the vector of states
+	current_configuration.clear(); // Clear the current state
 }
 void Engine1D::CreateMesh(Mesh1D &mesh)
 {
@@ -111,26 +110,26 @@ void Engine1D::Solve(Mesh1D &mesh)
 
 	int state_location = 1; // Always start at state 1; 0 is set by the intitial condition
 
-	for (double i = 0; i <= this->number_of_states; i++) // Iterate over time. Start at 0 because the time step may be < or > 1
+	for (double i = 0; i <= number_of_states; i++) // Iterate over time. Start at 0 because the time step may be < or > 1
 	{
 		Temperature.push_back(mesh.DirchletBoundaryEquation(i, 1)); //Make this call the BC function
-		this->current_configuration.push_back(std::make_tuple(mesh.all_node_locations.at(0), Temperature.front())); // Set the boundary condition
+		current_configuration.push_back(std::make_tuple(mesh.all_node_locations.at(0), Temperature.front())); // Set the boundary condition
 		for (int j = 1; j<mesh.number_of_nodes; ++j) // Start at the 2nd node (first is set above by the bountary condition)
 		{
 			cout << GetPreviousTemperature(state_location, current_node, 'f') << " + " << (1 - 2 * constants) * GetPreviousTemperature(state_location, current_node, 'n') << " +" << GetPreviousTemperature(state_location, current_node, 'b')*constants << endl;
 			double new_temp = constants*GetPreviousTemperature(state_location, current_node, 'f') + (1 - 2 * constants) * GetPreviousTemperature(state_location, current_node, 'n') + GetPreviousTemperature(state_location, current_node, 'b')*constants; // Get the temperature at the current node #; passes the current state.
 			Temperature.push_back(new_temp);
-			this->current_configuration.push_back(std::make_tuple(mesh.all_node_locations.at(current_node), Temperature.at(current_node))); // Use current_node to access the approriate physical node location. 
+			current_configuration.push_back(std::make_tuple(mesh.all_node_locations.at(current_node), Temperature.at(current_node))); // Use current_node to access the approriate physical node location. 
 			++current_node;
 		}
 		++state_location;
 		Temperature.push_back(mesh.DirchletBoundaryEquation(i, 2));
-		this->current_configuration.push_back(std::make_tuple(mesh.all_node_locations.at(current_node), 0));
+		current_configuration.push_back(std::make_tuple(mesh.all_node_locations.at(current_node), 0));
 		//++this->time;
 		cout << endl << endl << endl << endl << endl;
 		current_node = 1;
-		this->results.push_back(this->current_configuration); // Push the current state configuration vector into the results vector.
-		this->current_configuration.clear(); // Prepare for the next configuration by clearing the current one
+		results.push_back(current_configuration); // Push the current state configuration vector into the results vector.
+		current_configuration.clear(); // Prepare for the next configuration by clearing the current one
 		Temperature.clear(); // Clear the temperature vector
 	}
 	CreateCSV(mesh);
@@ -166,28 +165,28 @@ double Engine1D::RetrieveTemperature(int state_position, int record_position)
 
 void Engine2D::StartSimulation(Mesh2D &mesh)
 {
-	this->number_of_states = this->time_length / this->time_step;
+	number_of_states = time_length / time_step;
 	CreateMesh(mesh);
-	this->CreateTime();
-	this->CreateInitialState(mesh);
-	this->Solve(mesh);
+	CreateTime();
+	CreateInitialState(mesh);
+	Solve(mesh);
 }
 void Engine2D::CreateInitialState(Mesh2D &mesh)
 {
 	vector<vector<tuple<double, double>>> instance_container;
 	for (int i = 0; i < (mesh.spacial_length / mesh.spacial_step_size); i++)
 	{
-		this->current_configuration.push_back(std::make_tuple(mesh.all_node_locations.front(), mesh.left_side_boundary_conditions.at(0))); //Put the first I.C in.
+		current_configuration.push_back(std::make_tuple(mesh.all_node_locations.front(), mesh.left_side_boundary_conditions.at(0))); //Put the first I.C in.
 		for (float j = 1; j <= mesh.number_of_nodes - 1; ++j) // Iterate over the nodes which are not boundary conditions. (starts at node 1 and stops at # of nodes-1
 		{
-			this->current_configuration.push_back(std::make_tuple(mesh.all_node_locations.at(j), mesh.InitialDistribution(0)));
+			current_configuration.push_back(std::make_tuple(mesh.all_node_locations.at(j), mesh.InitialDistribution(0)));
 		}
-		this->current_configuration.push_back(std::make_tuple(mesh.all_node_locations.back(), mesh.right_side_boundary_conditions.at(0))); // Once filled, set the last B.C.
+		current_configuration.push_back(std::make_tuple(mesh.all_node_locations.back(), mesh.right_side_boundary_conditions.at(0))); // Once filled, set the last B.C.
 		Instance.push_back(current_configuration);
-		this->current_configuration.clear(); // Clear the current state
+		current_configuration.clear(); // Clear the current state
 	}
 
-	this->Results.push_back(Instance); // Add to the vector of states
+	Results.push_back(Instance); // Add to the vector of states
 	Instance.clear();
 
 }
@@ -328,3 +327,4 @@ void Engine2D::CreateCSV(Mesh2D mesh)
 
 	dataFile.close();
 }
+
