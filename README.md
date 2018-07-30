@@ -1,7 +1,8 @@
 # Finite-Difference-Method
-A Finite Difference Method Engine in C++
 
 [![CodeFactor](https://www.codefactor.io/repository/github/thomasthelen/finite-difference-method/badge)](https://www.codefactor.io/repository/github/thomasthelen/finite-difference-method)
+
+A Finite Difference Method Engine in C++
 
 This repository hosts a small library/engine for solving spacial differential equations using the finite difference method. This was created as a fun way to explore numerical methods as a stepping stone for the Finite Elements Method. Feel free to use this code as an example of how to numerically solve partial differential equations.
 
