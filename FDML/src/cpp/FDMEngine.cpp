@@ -15,7 +15,6 @@ void Engine::CreateTime()
 }
 double Engine1D::GetPreviousTemperature(int current_state, double node_location, char direction)
 {
-
 	if (direction == 'f')
 	{
 		return RetrieveTemperature(current_state - 1, node_location + 1);
@@ -35,10 +34,6 @@ double Engine1D::GetPreviousTemperature(int current_state, double node_location,
 	}
 }
 
-
-
-
-
 tuple<double, double> Engine::GetRecordb(int state_position, int record_position) const
 {
 	vector<tuple<double, double>> state;
@@ -47,8 +42,6 @@ tuple<double, double> Engine::GetRecordb(int state_position, int record_position
 	record = state.at(record_position);
 	return record;
 }
-
-
 
 void Engine1D::StartSimulation(Mesh1D &mesh)
 {
@@ -150,7 +143,6 @@ void Engine1D::CreateCSV(Mesh1D mesh)
 		}
 
 	}
-
 	dataFile.close();
 }
 double Engine1D::RetrieveTemperature(int state_position, int record_position)
@@ -161,7 +153,6 @@ double Engine1D::RetrieveTemperature(int state_position, int record_position)
 	record = state.at(record_position);
 	return get<1>(record);
 }
-
 
 void Engine2D::StartSimulation(Mesh2D &mesh)
 {
@@ -188,7 +179,6 @@ void Engine2D::CreateInitialState(Mesh2D &mesh)
 
 	Results.push_back(Instance); // Add to the vector of states
 	Instance.clear();
-
 }
 void Engine2D::CreateMesh(Mesh2D& mesh)
 {
@@ -201,7 +191,6 @@ void Engine2D::CreateMesh(Mesh2D& mesh)
 	for (int i = 0; i < mesh.number_of_nodes; i++)
 	{
 		mesh.all_node_locations.push_back(mesh.all_node_locations.back() + mesh.spacial_step_size);
-
 	}
 	// !Create a boundary condition for each state
 	for (int state = 0; state <= number_of_states; state++)
@@ -215,8 +204,6 @@ void Engine2D::CreateMesh(Mesh2D& mesh)
 			mesh.bottom_width_boundary_conditions.push_back(mesh.WidthBoundary());
 		}
 	}
-
-
 }
 bool Engine2D::CheckStability(Mesh2D mesh)
 {
@@ -304,10 +291,6 @@ double Engine2D::GetPreviousTemperature(int current_state, int y_position, doubl
 	}
 }
 
-
-
-
-
 void Engine2D::CreateCSV(Mesh2D mesh)
 {
 	std::ofstream dataFile;
@@ -322,9 +305,6 @@ void Engine2D::CreateCSV(Mesh2D mesh)
 			record = GetRecordb(i, j);
 			dataFile << get<0>(record) << "," << get<1>(record) << endl; // CORRECT THIS
 		}
-
 	}
-
 	dataFile.close();
 }
-
