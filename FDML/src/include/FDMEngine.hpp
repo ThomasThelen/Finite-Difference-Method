@@ -11,7 +11,6 @@
 #include <iostream>
 #include <fstream>
 
-
 using std::vector;
 using std::tuple;
 using std::cout;
@@ -70,13 +69,8 @@ public:
 	double(*SideBoundary)(void);
 
 	double(*WidthBoundary)(void);
-
-
 };
 
-
-
-//
 class Engine
 {
 public:
