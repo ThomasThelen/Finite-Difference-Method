@@ -141,7 +141,6 @@ void Engine1D::CreateCSV(Mesh1D mesh)
 			record = GetRecordb(i, j);
 			dataFile << get<0>(record) << "," << get<1>(record) << endl;
 		}
-
 	}
 	dataFile.close();
 }
@@ -271,7 +270,6 @@ double Engine2D::RetrieveTemperature(int current_state, int y_position, int node
 
 double Engine2D::GetPreviousTemperature(int current_state, int y_position, double node_location, char direction)
 {
-
 	if (direction == 'f')
 	{
 		return RetrieveTemperature(current_state-1, y_position - 1, node_location + 1);
