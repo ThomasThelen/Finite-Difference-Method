@@ -71,6 +71,11 @@ public:
 	double(*WidthBoundary)(void);
 };
 
+/*! \class Engine
+* \A base class for solution engines
+*  Contains basic information that's used across n-dimensional solvers.
+*/
+
 class Engine
 {
 public:
@@ -119,7 +124,7 @@ public:
 
 
 	/*! Fills in important properties for the mesh. 
-		@arg Mesh1DAn empty mesh object whose are going to be set by CreateMesh
+		@arg Mesh1D An empty mesh object whose are going to be set by CreateMesh
 
 	*/
 	void CreateMesh(Mesh1D&);
@@ -146,11 +151,10 @@ class Engine2D : public Engine
 public:
 	vector<vector<tuple<double, double>>> Instance;
 
+	// !This is ugly
 	vector<vector<vector<tuple<double, double>>>> Results;
 
 	void CreateMesh(Mesh2D&);
-
-	void StartSimulation(Mesh2D &mesh);
 
 	void CreateInitialState(Mesh2D&);
 

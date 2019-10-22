@@ -15,14 +15,17 @@ void Engine::CreateTime()
 }
 double Engine1D::GetPreviousTemperature(int current_state, double node_location, char direction)
 {
+	// Check if we're checking the value at the next node location
 	if (direction == 'f')
 	{
 		return RetrieveTemperature(current_state - 1, node_location + 1);
 	}
+	// Check if we're going back one node length
 	if (direction == 'b')
 	{
 		return RetrieveTemperature(current_state - 1, node_location - 1);
 	}
+	// Check if we're at the current node
 	if (direction == 'n')
 	{
 		return RetrieveTemperature(current_state - 1, node_location);
@@ -97,7 +100,8 @@ void Engine1D::Solve(Mesh1D &mesh)
 		cout << " It is currently at " << (mesh.thermal_conductivity*time_step) / (mesh.spacial_step_size*mesh.spacial_step_size) << endl;
 	}
 
-	vector<double> Temperature;
+	vector<double> temperature;
+	temperature.reserve(number_of_states);
 	double constants = (mesh.thermal_conductivity*time_step) / (mesh.spacial_step_size*mesh.spacial_step_size),
 		current_node = 1; // Always start at 1; 0 is set by the boundary condition
 
@@ -105,25 +109,24 @@ void Engine1D::Solve(Mesh1D &mesh)
 
 	for (double i = 0; i <= number_of_states; i++) // Iterate over time. Start at 0 because the time step may be < or > 1
 	{
-		Temperature.push_back(mesh.DirchletBoundaryEquation(i, 1)); //Make this call the BC function
-		current_configuration.push_back(std::make_tuple(mesh.all_node_locations.at(0), Temperature.front())); // Set the boundary condition
+		temperature.push_back(mesh.DirchletBoundaryEquation(i, 1)); //Make this call the BC function
+		current_configuration.push_back(std::make_tuple(mesh.all_node_locations.at(0), temperature.front())); // Set the boundary condition
 		for (int j = 1; j<mesh.number_of_nodes; ++j) // Start at the 2nd node (first is set above by the bountary condition)
 		{
 			cout << GetPreviousTemperature(state_location, current_node, 'f') << " + " << (1 - 2 * constants) * GetPreviousTemperature(state_location, current_node, 'n') << " +" << GetPreviousTemperature(state_location, current_node, 'b')*constants << endl;
 			double new_temp = constants*GetPreviousTemperature(state_location, current_node, 'f') + (1 - 2 * constants) * GetPreviousTemperature(state_location, current_node, 'n') + GetPreviousTemperature(state_location, current_node, 'b')*constants; // Get the temperature at the current node #; passes the current state.
-			Temperature.push_back(new_temp);
-			current_configuration.push_back(std::make_tuple(mesh.all_node_locations.at(current_node), Temperature.at(current_node))); // Use current_node to access the approriate physical node location. 
+			temperature.push_back(new_temp);
+			current_configuration.push_back(std::make_tuple(mesh.all_node_locations.at(current_node), temperature.at(current_node))); // Use current_node to access the approriate physical node location. 
 			++current_node;
 		}
 		++state_location;
-		Temperature.push_back(mesh.DirchletBoundaryEquation(i, 2));
+		temperature.push_back(mesh.DirchletBoundaryEquation(i, 2));
 		current_configuration.push_back(std::make_tuple(mesh.all_node_locations.at(current_node), 0));
-		//++this->time;
 		cout << endl << endl << endl << endl << endl;
 		current_node = 1;
 		results.push_back(current_configuration); // Push the current state configuration vector into the results vector.
 		current_configuration.clear(); // Prepare for the next configuration by clearing the current one
-		Temperature.clear(); // Clear the temperature vector
+		temperature.clear(); // Clear the temperature vector
 	}
 	CreateCSV(mesh);
 }
@@ -153,14 +156,6 @@ double Engine1D::RetrieveTemperature(int state_position, int record_position)
 	return get<1>(record);
 }
 
-void Engine2D::StartSimulation(Mesh2D &mesh)
-{
-	number_of_states = time_length / time_step;
-	CreateMesh(mesh);
-	CreateTime();
-	CreateInitialState(mesh);
-	Solve(mesh);
-}
 void Engine2D::CreateInitialState(Mesh2D &mesh)
 {
 	vector<vector<tuple<double, double>>> instance_container;
