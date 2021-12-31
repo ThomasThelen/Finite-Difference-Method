@@ -29,6 +29,50 @@ The `Mesh` struct manages information about the object being simulated over. The
 
 ![Mesh](docs/mesh.png)
 
-The `Engine` class parses information from associated mesh and is responsible for encapsulating the routiens for the Finite Difference Method.
+The `Engine` class parses information from associated mesh and is responsible for encapsulating the routines for the Finite Difference Method.
 
-![Engine](docs/engine.png)
+![Engine](docs/engines.png)
+
+## Creating Simulations
+
+
+A successful simulation will have both a Mesh and an Engine class instantiated.
+
+The mesh must have the following defined,
+```
+mesh.spatial_length = 10;
+mesh.spatial_step_size = 1;
+mesh.thermal_conductivity = 0.01;
+mesh.DirchletBoundaryEquation = BC;
+mesh.InitialDistribution = InitialRodDistribution;
+```
+
+The boundary condition must be a function with the signature
+
+`double BoundaryCondition(double x, int time)`
+
+For example,
+```
+double BoundaryCondition(double x, int time)
+{
+	return 15*x+t/2;
+}
+```
+
+The initial distribution method provides an interface to defining the temperature along the object and must have a signature of
+
+`double TempDistribution(double position)`
+
+For example, a function that defines the temperature as a constant `50` between the boundary points...
+
+```
+double TempDistribution(double position) {
+	return 10;
+}
+```
+
+To run, call `StartSimulation` on the engine object and pass it the mesh object.
+```
+Engine engine;
+engine.StartSimulation(int time_length, int time_step, Mesh1D& mesh);
+```
