@@ -1,4 +1,6 @@
 #pragma once
+#include <functional>
+
 struct Mesh
 {
 	//! Length of the object.
@@ -14,6 +16,6 @@ struct Mesh
 	int number_of_nodes;
 
 	//! A pointer to the user defined boundary condition function.
-	double(*DirchletBoundaryEquation)(double, int);
-	double(*InitialDistribution)(double);
+	std::function<double(double, int)> DirchletBoundaryEquation;
+	std::function<double(double)> InitialDistribution;
 };

@@ -14,7 +14,7 @@ struct Mesh2D : public Mesh
 
 	vector<double> all_node_locations;
 
-	double(*SideBoundary)(void);
+	std::function<double()> SideBoundary;
 
-	double(*WidthBoundary)(void);
+	std::function<double()> WidthBoundary;
 };
